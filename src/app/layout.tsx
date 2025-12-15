@@ -6,7 +6,7 @@ import Script from 'next/script';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: '데이트픽',
+  title: '데이지',
   description: 'AI-powered date course recommendations',
 };
 
