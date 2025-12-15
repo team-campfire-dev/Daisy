@@ -26,3 +26,17 @@ model Place {
 
   @@index([lat, lng])
 }
+
+model RouteCache {
+  id          String   @id @default(uuid())
+  startLat    Float
+  startLng    Float
+  endLat      Float
+  endLng      Float
+  distance    Float
+  duration    Int
+  pathJson    String
+  createdAt   DateTime @default(now())
+
+  @@index([startLat, startLng, endLat, endLng])
+}

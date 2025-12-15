@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { searchGooglePlaces, GooglePlace } from '@/lib/googlePlaces';
-import { getWalkingRoute } from '@/lib/tmap';
+import { getOrFetchWalkingRoute } from '@/services/routeService';
 
 import { findNearbyPlaces, upsertGooglePlace } from './placeService';
 
@@ -302,8 +302,8 @@ export async function generateDateCourse(
 
 
           if (from.lat && to.lat) {
-            // 1. Try TMap Walking Route
-            let routeResult = await getWalkingRoute(from, to);
+            // 1. Try TMap Walking Route (via Cache)
+            let routeResult = await getOrFetchWalkingRoute(from, to);
 
 
 
