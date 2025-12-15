@@ -11,6 +11,43 @@ interface CourseSidebarProps {
     className?: string;
 }
 
+const categoryMap: { [key: string]: string } = {
+    restaurant: '식당',
+    korean_restaurant: '한식',
+    japanese_restaurant: '일식',
+    chinese_restaurant: '중식',
+    asian_restaurant: '아시안',
+    western_restaurant: '양식',
+    italian_restaurant: '이탈리안',
+    french_restaurant: '프렌치',
+    cafe: '카페',
+    coffee_shop: '카페',
+    bar: '술집',
+    pub: '펍',
+    club: '클럽',
+    park: '공원',
+    gym: '헬스장',
+    spa: '스파',
+    movie_theater: '영화관',
+    museum: '박물관',
+    art_gallery: '미술관',
+    shopping_mall: '쇼핑몰',
+    clothing_store: '옷가게',
+    department_store: '백화점',
+    tourist_attraction: '관광지',
+    amusement_park: '놀이공원',
+    aquarium: '아쿠아리움',
+    zoo: '동물원',
+    library: '도서관',
+    book_store: '서점',
+    bakery: '베이커리',
+    meal_takeaway: '포장',
+    meal_delivery: '배달',
+    convenience_store: '편의점',
+    supermarket: '마트'
+};
+
+
 export default function CourseSidebar({ plans, selectedPlanId, onSelectPlan, onStepClick, className = '' }: CourseSidebarProps) {
     const selectedPlan = plans.find(p => p.id === selectedPlanId) || plans[0] || null;
 
@@ -139,13 +176,13 @@ export default function CourseSidebar({ plans, selectedPlanId, onSelectPlan, onS
                                                     {step.placeName}
                                                 </h3>
                                                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-gray-300 shrink-0">
-                                                    {step.category}
+                                                    {categoryMap[step.category?.toLowerCase()] || step.category?.replace(/_/g, ' ') || '기타'}
                                                 </span>
                                             </div>
                                             <p className="text-xs text-gray-400 line-clamp-2 mb-2">
                                                 {step.description}
                                             </p>
-                                            <div className="flex items-center justify-between text-[10px] text-gray-500">
+                                            <div className="flex items-center justify-between text-[10px] text-gray-400">
                                                 <span>⌚ {step.duration}</span>
                                                 {step.detail?.priceRange && <span>💰 {step.detail.priceRange}</span>}
                                             </div>

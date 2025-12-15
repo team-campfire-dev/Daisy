@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { upsertGooglePlace } from '@/services/placeService';
 
 const GOOGLE_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
 
@@ -56,7 +57,7 @@ export async function searchGooglePlaces(query: string, limit: number = 3): Prom
         const data = await response.json();
         if (!data.places) return [];
 
-        return data.places.map((place: any) => {
+        const results: GooglePlace[] = data.places.map((place: any) => {
             let photoUrl = undefined;
             if (place.photos && place.photos.length > 0) {
                 // Construct Photo URL (max width 400px)
@@ -80,6 +81,11 @@ export async function searchGooglePlaces(query: string, limit: number = 3): Prom
                 website: place.websiteUri
             };
         });
+
+        // Async Upsert to DB (Fire and Forget)
+        results.forEach(p => upsertGooglePlace(p).catch(err => console.error("DB Upsert Fail", err)));
+
+        return results;
 
     } catch (error) {
         console.error("[GooglePlaces] Exception:", error);
