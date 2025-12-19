@@ -40,3 +40,32 @@ model RouteCache {
 
   @@index([startLat, startLng, endLat, endLng])
 }
+
+model Session {
+  id          String   @id @default(uuid())
+  sessionId   String   @unique
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  lastActive  DateTime @default(now())
+  
+  caches      UserCache[]
+  
+  @@index([sessionId])
+  @@index([expiresAt])
+}
+
+model UserCache {
+  id          String   @id @default(uuid())
+  sessionId   String
+  session     Session  @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+  
+  cacheType   String   // "place", "route", "course"
+  cacheKey    String   // unique identifier for this cache
+  cacheData   String   // JSON stringified data
+  
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  
+  @@index([sessionId, cacheType])
+  @@index([expiresAt])
+}

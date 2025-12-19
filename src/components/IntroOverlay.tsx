@@ -14,6 +14,8 @@ export interface UserContext {
 
 interface IntroOverlayProps {
     onComplete: (context: UserContext) => void;
+    initialContext?: UserContext;
+    editMode?: boolean; // If true, skip intro and show form directly
 }
 
 // --- Custom Components ---
@@ -213,10 +215,10 @@ const TimePicker = ({ value, onChange }: { value: string, onChange: (time: strin
 }
 
 
-export default function IntroOverlay({ onComplete }: IntroOverlayProps) {
+export default function IntroOverlay({ onComplete, initialContext, editMode = false }: IntroOverlayProps) {
     const [isVisible, setIsVisible] = useState(true);
-    const [step, setStep] = useState(0); // 0: Intro, 1: Form
-    const [context, setContext] = useState<UserContext>({
+    const [step, setStep] = useState(editMode ? 1 : 0); // Skip intro if edit mode
+    const [context, setContext] = useState<UserContext>(initialContext || {
         date: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`, // YYYY-MM-DD (Local)
         time: '오후 06:30',
         partner: 'Lover',
@@ -272,7 +274,9 @@ export default function IntroOverlay({ onComplete }: IntroOverlayProps) {
                     >
                         {/* Background Decoration - Removed for performance/cleanliness */}
 
-                        <h2 className="text-3xl font-bold text-white mb-8 text-center">몇 가지 질문이 있어요!</h2>
+                        <h2 className="text-3xl font-bold text-white mb-8 text-center">
+                            {editMode ? '설정 변경' : '몇 가지 질문이 있어요!'}
+                        </h2>
 
                         <div className="relative z-10 text-left">
                             {/* Row 1: Date & Time */}
@@ -350,7 +354,7 @@ export default function IntroOverlay({ onComplete }: IntroOverlayProps) {
                             onClick={handleStart}
                             className="w-full mt-8 bg-white text-slate-900 font-bold py-4 rounded-xl hover:bg-slate-200 transition-transform active:scale-95 shadow-xl"
                         >
-                            데이지와 코스 짜기 ✨
+                            {editMode ? '설정 저장 ✓' : '데이지와 코스 짜기 ✨'}
                         </button>
                     </motion.div>
                 )}

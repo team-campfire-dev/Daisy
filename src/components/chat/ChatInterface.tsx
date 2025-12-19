@@ -11,6 +11,7 @@ interface ChatInterfaceProps {
     messages: Message[];
     onSendMessage: (msg: string) => void;
     onGenerate: () => void;
+    onNewChat: () => void; // NEW
     isGenerating?: boolean;
     loadingStatus?: string;
     suggestions?: string[];
@@ -20,6 +21,7 @@ export default function ChatInterface({
     messages,
     onSendMessage,
     onGenerate,
+    onNewChat,
     isGenerating,
     loadingStatus = "데이지가 생각 중...",
     suggestions
@@ -55,13 +57,23 @@ export default function ChatInterface({
                     </div>
                 </div>
 
-                <button
-                    onClick={onGenerate}
-                    disabled={isGenerating}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold rounded-lg transition-colors shadow-md disabled:opacity-50"
-                >
-                    ✨ 계획 짜기
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={onNewChat}
+                        disabled={isGenerating}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm font-bold rounded-lg transition-colors shadow-md disabled:opacity-50"
+                        title="새로운 채팅 시작"
+                    >
+                        🔄 새 채팅
+                    </button>
+                    <button
+                        onClick={onGenerate}
+                        disabled={isGenerating}
+                        className="flex items-center gap-1.5 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold rounded-lg transition-colors shadow-md disabled:opacity-50"
+                    >
+                        ✨ 계획 짜기
+                    </button>
+                </div>
             </div>
 
             {/* Messages */}
