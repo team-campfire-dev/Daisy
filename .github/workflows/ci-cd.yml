@@ -43,11 +43,18 @@ jobs:
         key: ${{ secrets.KEY }}
         port: 22
         script: |
-          # 프로젝트 경로로 이동 (경로를 실제 VM 환경에 맞게 수정해주세요)
-          cd ~/Daisy 
-          
-          # 최신 코드 받기
-          git pull origin prod
+          # 프로젝트 경로 설정
+          PROJECT_DIR=~/Daisy
+
+          if [ ! -d "$PROJECT_DIR" ]; then
+            echo "Project directory does not exist. Cloning..."
+            git clone -b prod https://github.com/team-campfire-dev/Daisy.git "$PROJECT_DIR"
+            cd "$PROJECT_DIR"
+          else
+            echo "Project directory exists. Pulling latest code..."
+            cd "$PROJECT_DIR"
+            git pull origin prod
+          fi
           
           # .env.local 생성 (GitHub Secrets에서 주입)
           echo "${{ secrets.ENV_FILE }}" > .env.local
