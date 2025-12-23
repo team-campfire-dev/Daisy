@@ -43,17 +43,20 @@ jobs:
         key: ${{ secrets.KEY }}
         port: 22
         script: |
-          # 프로젝트 경로 설정
-          PROJECT_DIR=~/Daisy
-
           if [ ! -d "$PROJECT_DIR" ]; then
             echo "Project directory does not exist. Cloning..."
             git clone -b prod https://github.com/team-campfire-dev/Daisy.git "$PROJECT_DIR"
             cd "$PROJECT_DIR"
           else
-            echo "Project directory exists. Pulling latest code..."
+            echo "Project directory exists. Trying to pull..."
             cd "$PROJECT_DIR"
-            git pull origin prod
+            if ! git pull origin prod; then
+              echo "Git pull failed. Re-cloning..."
+              cd ~
+              rm -rf "$PROJECT_DIR"
+              git clone -b prod https://github.com/team-campfire-dev/Daisy.git "$PROJECT_DIR"
+              cd "$PROJECT_DIR"
+            fi
           fi
           
           # .env.local 생성 (GitHub Secrets에서 주입)
