@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  app:
+    container_name: daisy-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 3000:3000
+    env_file:
+      - .env.local
+    volumes:
+      - ./public:/app/public

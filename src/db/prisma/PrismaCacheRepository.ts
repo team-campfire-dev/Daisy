@@ -80,7 +80,7 @@ export class PrismaCacheRepository implements ICacheRepository {
                 return null;
             }
 
-            return cache;
+            return cache as unknown as CacheData;
         } catch (error) {
             console.error('[CacheRepo] Failed to get cache:', error);
             return null;
@@ -123,7 +123,7 @@ export class PrismaCacheRepository implements ICacheRepository {
                     .catch((err) => console.error('[CacheRepo] Failed to delete expired caches:', err));
             }
 
-            return validCaches;
+            return validCaches as unknown as CacheData[];
         } catch (error) {
             console.error('[CacheRepo] Failed to get caches by session:', error);
             return [];
