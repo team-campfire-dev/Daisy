@@ -74,7 +74,7 @@ export default function KakaoMapComponent({ plan, onMarkerClick }: KakaoMapCompo
                     <p className="font-bold">지도 로드 실패</p>
                     <p className="text-sm bg-red-100 p-2 rounded text-red-700">{mapError}</p>
                     <p className="text-xs text-slate-500">
-                        1. 키가 'JavaScript Key'가 맞는지 확인 (REST Key 아님)<br />
+                        1. 키가 &apos;JavaScript Key&apos;가 맞는지 확인 (REST Key 아님)<br />
                         2. 도메인(localhost:3000) 등록 확인<br />
                         3. 광고 차단 프로그램 확인
                     </p>

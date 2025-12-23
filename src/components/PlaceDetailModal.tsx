@@ -122,7 +122,7 @@ export default function PlaceDetailModal({ isOpen, onClose, placeName, detail, i
                                         <div className="space-y-2">
                                             {detail.reviews.map((review, i) => (
                                                 <div key={i} className="bg-slate-800 p-3 rounded-lg text-sm text-slate-300 border border-slate-700/50">
-                                                    "{review}"
+                                                    &quot;{review}&quot;
                                                 </div>
                                             ))}
                                         </div>
