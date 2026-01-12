@@ -1,6 +1,7 @@
 import prisma from '@/lib/db';
 import { ISessionRepository, Session } from '../interfaces/ISessionRepository';
 import { randomUUID } from 'crypto';
+import { logger } from '@/lib/logger';
 
 /**
  * Prisma implementation of ISessionRepository
@@ -20,10 +21,10 @@ export class PrismaSessionRepository implements ISessionRepository {
                 },
             });
 
-            console.log(`[SessionRepo] Created session: ${sessionId}`);
+            logger.info(`Created session: ${sessionId}`, { service: 'SessionRepo' });
             return session;
         } catch (error) {
-            console.error('[SessionRepo] Failed to create session:', error);
+            logger.error('Failed to create session', { error, service: 'SessionRepo' });
             throw error;
         }
     }
@@ -36,14 +37,14 @@ export class PrismaSessionRepository implements ISessionRepository {
 
             // Check if session is expired
             if (session && new Date(session.expiresAt) < new Date()) {
-                console.log(`[SessionRepo] Session ${sessionId} is expired, deleting...`);
+                logger.info(`Session ${sessionId} is expired, deleting...`, { service: 'SessionRepo' });
                 await this.deleteSession(sessionId);
                 return null;
             }
 
             return session;
         } catch (error) {
-            console.error('[SessionRepo] Failed to get session:', error);
+            logger.error('Failed to get session', { error, service: 'SessionRepo' });
             return null;
         }
     }
@@ -57,7 +58,7 @@ export class PrismaSessionRepository implements ISessionRepository {
                 },
             });
         } catch (error) {
-            console.error('[SessionRepo] Failed to update last active:', error);
+            logger.error('Failed to update last active', { error, service: 'SessionRepo' });
             // Don't throw - this is non-critical
         }
     }
@@ -72,10 +73,10 @@ export class PrismaSessionRepository implements ISessionRepository {
                 },
             });
 
-            console.log(`[SessionRepo] Deleted ${result.count} expired sessions`);
+            logger.info(`Deleted ${result.count} expired sessions`, { service: 'SessionRepo' });
             return result.count;
         } catch (error) {
-            console.error('[SessionRepo] Failed to delete expired sessions:', error);
+            logger.error('Failed to delete expired sessions', { error, service: 'SessionRepo' });
             return 0;
         }
     }
@@ -85,9 +86,9 @@ export class PrismaSessionRepository implements ISessionRepository {
             await prisma.session.delete({
                 where: { sessionId },
             });
-            console.log(`[SessionRepo] Deleted session: ${sessionId}`);
+            logger.info(`Deleted session: ${sessionId}`, { service: 'SessionRepo' });
         } catch (error) {
-            console.error('[SessionRepo] Failed to delete session:', error);
+            logger.error('Failed to delete session', { error, service: 'SessionRepo' });
             throw error;
         }
     }

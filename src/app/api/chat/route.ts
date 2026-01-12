@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { generateDateCourse } from '@/services/gemini';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: Request) {
     try {
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
         return NextResponse.json(response);
 
     } catch (error) {
-        console.error('Chat API Error:', error);
+        logger.error('Chat API Error', { error, service: 'API/Chat' });
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

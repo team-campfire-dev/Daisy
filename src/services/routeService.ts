@@ -1,5 +1,6 @@
 import prisma from '@/lib/db';
 import { getWalkingRoute, RouteInfo } from '@/lib/tmap';
+import { logger } from '@/lib/logger';
 
 /**
  * Get walking route, checking cache first.
@@ -29,7 +30,7 @@ export async function getOrFetchWalkingRoute(
         });
 
         if (cached) {
-            console.log(`[RouteCache] Hit! (${startLat},${startLng}) -> (${endLat},${endLng})`);
+            logger.info(`Cache Hit!`, { start: { lat: startLat, lng: startLng }, end: { lat: endLat, lng: endLng }, service: 'RouteCache' });
             return {
                 distance: cached.distance,
                 duration: cached.duration,
@@ -38,7 +39,7 @@ export async function getOrFetchWalkingRoute(
         }
 
         // 3. API Call
-        console.log(`[RouteCache] Miss. Fetching from TMap...`);
+        logger.info(`Cache Miss. Fetching from TMap...`, { service: 'RouteCache' });
         const result = await getWalkingRoute(origin, destination);
 
         if (result) {
@@ -55,9 +56,9 @@ export async function getOrFetchWalkingRoute(
                         pathJson: JSON.stringify(result.path)
                     }
                 });
-                console.log(`[RouteCache] Saved new route.`);
+                logger.info(`Saved new route.`, { service: 'RouteCache' });
             } catch (saveErr) {
-                console.error("[RouteCache] Failed to save:", saveErr);
+                logger.error("Failed to save route", { error: saveErr, service: 'RouteCache' });
                 // Non-blocking error, carry on
             }
         }
@@ -65,7 +66,7 @@ export async function getOrFetchWalkingRoute(
         return result;
 
     } catch (e) {
-        console.error("[RouteService] Error:", e);
+        logger.error("Error in route service", { error: e, service: 'RouteService' });
         // Fallback to direct API if DB fails
         return getWalkingRoute(origin, destination);
     }

@@ -1,7 +1,7 @@
 import { DatabaseContainer } from '@/db/container';
-import { CacheType, ParsedCacheData } from '@/db/interfaces/ICacheRepository';
 import { Place } from './placeService';
 import { CoursePlan } from './gemini';
+import { logger } from '@/lib/logger';
 
 /**
  * High-level caching service for user data
@@ -39,7 +39,7 @@ export class CacheService {
         try {
             return JSON.parse(cache.cacheData) as Place[];
         } catch (error) {
-            console.error('[CacheService] Failed to parse cached place query:', error);
+            logger.error('Failed to parse cached place query', { error, service: 'CacheService' });
             return null;
         }
     }
@@ -57,7 +57,7 @@ export class CacheService {
                 const parsed = JSON.parse(cache.cacheData) as Place[];
                 places.push(...parsed);
             } catch (error) {
-                console.error('[CacheService] Failed to parse cached places:', error);
+                logger.error('Failed to parse cached places', { error, service: 'CacheService' });
             }
         }
 
@@ -96,7 +96,7 @@ export class CacheService {
         try {
             return JSON.parse(cache.cacheData) as CoursePlan;
         } catch (error) {
-            console.error('[CacheService] Failed to parse cached course:', error);
+            logger.error('Failed to parse cached course', { error, service: 'CacheService' });
             return null;
         }
     }
@@ -114,7 +114,7 @@ export class CacheService {
                 const parsed = JSON.parse(cache.cacheData) as CoursePlan;
                 courses.push(parsed);
             } catch (error) {
-                console.error('[CacheService] Failed to parse cached course:', error);
+                logger.error('Failed to parse cached course', { error, service: 'CacheService' });
             }
         }
 
@@ -153,7 +153,7 @@ export class CacheService {
         try {
             return JSON.parse(cache.cacheData) as T;
         } catch (error) {
-            console.error('[CacheService] Failed to parse cached route:', error);
+            logger.error('Failed to parse cached route', { error, service: 'CacheService' });
             return null;
         }
     }

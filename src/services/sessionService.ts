@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { DatabaseContainer } from '@/db/container';
 import { Session } from '@/db/interfaces/ISessionRepository';
 
@@ -19,14 +20,14 @@ export class SessionService {
             if (existing) {
                 // Update last active timestamp
                 await sessionRepo.updateLastActive(cookieSessionId);
-                console.log(`[SessionService] Retrieved existing session: ${cookieSessionId}`);
+                logger.info(`Retrieved existing session: ${cookieSessionId}`, { service: 'SessionService' });
                 return existing;
             }
         }
 
         // Create new session
         const newSession = await sessionRepo.createSession();
-        console.log(`[SessionService] Created new session: ${newSession.sessionId}`);
+        logger.info(`Created new session: ${newSession.sessionId}`, { service: 'SessionService' });
         return newSession;
     }
 
