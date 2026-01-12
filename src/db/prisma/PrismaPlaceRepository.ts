@@ -2,6 +2,7 @@ import prisma from '@/lib/db';
 import { IPlaceRepository } from '../interfaces/IPlaceRepository';
 import { Place } from '@/services/placeService';
 import { GooglePlace } from '@/lib/googlePlaces';
+import { logger } from '@/lib/logger';
 
 /**
  * Prisma implementation of IPlaceRepository
@@ -45,9 +46,9 @@ export class PrismaPlaceRepository implements IPlaceRepository {
                     openingHours: openingHours,
                 },
             });
-            console.log(`[PlaceRepo] Upserted place: ${place.title}`);
+            logger.info(`Upserted place: ${place.title}`, { service: 'PlaceRepo' });
         } catch (error) {
-            console.error(`[PlaceRepo] Failed to upsert place ${place.title}:`, error);
+            logger.error(`Failed to upsert place ${place.title}`, { error, service: 'PlaceRepo' });
             throw error;
         }
     }
@@ -93,7 +94,7 @@ export class PrismaPlaceRepository implements IPlaceRepository {
 
             return results;
         } catch (error) {
-            console.error('[PlaceRepo] findNearby error:', error);
+            logger.error('findNearby error', { error, service: 'PlaceRepo' });
             return [];
         }
     }
@@ -110,7 +111,7 @@ export class PrismaPlaceRepository implements IPlaceRepository {
                 take: 10,
             });
         } catch (error) {
-            console.error('[PlaceRepo] searchByText error:', error);
+            logger.error('searchByText error', { error, service: 'PlaceRepo' });
             return [];
         }
     }
@@ -121,7 +122,7 @@ export class PrismaPlaceRepository implements IPlaceRepository {
                 where: { id },
             });
         } catch (error) {
-            console.error('[PlaceRepo] findById error:', error);
+            logger.error('findById error', { error, service: 'PlaceRepo' });
             return null;
         }
     }
@@ -136,7 +137,7 @@ export class PrismaPlaceRepository implements IPlaceRepository {
                 },
             });
         } catch (error) {
-            console.error('[PlaceRepo] findAll error:', error);
+            logger.error('findAll error', { error, service: 'PlaceRepo' });
             return [];
         }
     }

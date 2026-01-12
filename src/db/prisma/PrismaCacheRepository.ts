@@ -1,5 +1,6 @@
 import prisma from '@/lib/db';
 import { ICacheRepository, CacheData, CacheType } from '../interfaces/ICacheRepository';
+import { logger } from '@/lib/logger';
 
 /**
  * Prisma implementation of ICacheRepository
@@ -48,9 +49,9 @@ export class PrismaCacheRepository implements ICacheRepository {
                 });
             }
 
-            console.log(`[CacheRepo] Set cache: ${cacheType}/${cacheKey} for session ${sessionId}`);
+            logger.info(`Set cache: ${cacheType}/${cacheKey} for session ${sessionId}`, { service: 'CacheRepo' });
         } catch (error) {
-            console.error('[CacheRepo] Failed to set cache:', error);
+            logger.error('Failed to set cache', { error, service: 'CacheRepo' });
             throw error;
         }
     }
@@ -75,14 +76,14 @@ export class PrismaCacheRepository implements ICacheRepository {
 
             // Check if expired
             if (new Date(cache.expiresAt) < new Date()) {
-                console.log(`[CacheRepo] Cache expired: ${cacheType}/${cacheKey}, deleting...`);
+                logger.info(`Cache expired: ${cacheType}/${cacheKey}, deleting...`, { service: 'CacheRepo' });
                 await this.deleteCache(cache.id);
                 return null;
             }
 
             return cache as unknown as CacheData;
         } catch (error) {
-            console.error('[CacheRepo] Failed to get cache:', error);
+            logger.error('Failed to get cache', { error, service: 'CacheRepo' });
             return null;
         }
     }
@@ -120,12 +121,12 @@ export class PrismaCacheRepository implements ICacheRepository {
                             id: { in: expiredIds },
                         },
                     })
-                    .catch((err) => console.error('[CacheRepo] Failed to delete expired caches:', err));
+                    .catch((err) => logger.error('Failed to delete expired caches', { error: err, service: 'CacheRepo' }));
             }
 
             return validCaches as unknown as CacheData[];
         } catch (error) {
-            console.error('[CacheRepo] Failed to get caches by session:', error);
+            logger.error('Failed to get caches by session', { error, service: 'CacheRepo' });
             return [];
         }
     }
@@ -140,10 +141,10 @@ export class PrismaCacheRepository implements ICacheRepository {
                 },
             });
 
-            console.log(`[CacheRepo] Deleted ${result.count} expired cache entries`);
+            logger.info(`Deleted ${result.count} expired cache entries`, { service: 'CacheRepo' });
             return result.count;
         } catch (error) {
-            console.error('[CacheRepo] Failed to clear expired cache:', error);
+            logger.error('Failed to clear expired cache', { error, service: 'CacheRepo' });
             return 0;
         }
     }
@@ -153,9 +154,9 @@ export class PrismaCacheRepository implements ICacheRepository {
             const result = await prisma.userCache.deleteMany({
                 where: { sessionId },
             });
-            console.log(`[CacheRepo] Cleared ${result.count} cache entries for session ${sessionId}`);
+            logger.info(`Cleared ${result.count} cache entries for session ${sessionId}`, { service: 'CacheRepo' });
         } catch (error) {
-            console.error('[CacheRepo] Failed to clear session cache:', error);
+            logger.error('Failed to clear session cache', { error, service: 'CacheRepo' });
             throw error;
         }
     }
@@ -166,7 +167,7 @@ export class PrismaCacheRepository implements ICacheRepository {
                 where: { id },
             });
         } catch (error) {
-            console.error('[CacheRepo] Failed to delete cache:', error);
+            logger.error('Failed to delete cache', { error, service: 'CacheRepo' });
             throw error;
         }
     }

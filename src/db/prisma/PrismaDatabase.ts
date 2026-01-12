@@ -1,5 +1,6 @@
 import prisma from '@/lib/db';
 import { IDatabase } from '../interfaces/IDatabase';
+import { logger } from '@/lib/logger';
 
 /**
  * Prisma implementation of IDatabase interface
@@ -8,9 +9,9 @@ export class PrismaDatabase implements IDatabase {
     async connect(): Promise<void> {
         try {
             await prisma.$connect();
-            console.log('[DB] Prisma database connected');
+            logger.info('Prisma database connected', { service: 'DB' });
         } catch (error) {
-            console.error('[DB] Failed to connect to database:', error);
+            logger.error('Failed to connect to database', { error, service: 'DB' });
             throw error;
         }
     }
@@ -18,9 +19,9 @@ export class PrismaDatabase implements IDatabase {
     async disconnect(): Promise<void> {
         try {
             await prisma.$disconnect();
-            console.log('[DB] Prisma database disconnected');
+            logger.info('Prisma database disconnected', { service: 'DB' });
         } catch (error) {
-            console.error('[DB] Failed to disconnect from database:', error);
+            logger.error('Failed to disconnect from database', { error, service: 'DB' });
             throw error;
         }
     }
@@ -30,7 +31,7 @@ export class PrismaDatabase implements IDatabase {
             await prisma.$queryRaw`SELECT 1`;
             return true;
         } catch (error) {
-            console.error('[DB] Health check failed:', error);
+            logger.error('Health check failed', { error, service: 'DB' });
             return false;
         }
     }

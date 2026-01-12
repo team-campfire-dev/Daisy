@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withSession } from '@/middleware/session';
 import { CacheService } from '@/services/cacheService';
 import { CacheType } from '@/db/interfaces/ICacheRepository';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/cache?type={place|course|route}
@@ -31,7 +32,7 @@ export const GET = withSession(async (request, session) => {
             return NextResponse.json({ stats });
         }
     } catch (error) {
-        console.error('[API] Failed to get cache:', error);
+        logger.error('Failed to get cache', { error, service: 'API/Cache' });
         return NextResponse.json(
             { error: 'Failed to retrieve cache' },
             { status: 500 }
@@ -50,7 +51,7 @@ export const DELETE = withSession(async (request, session) => {
             message: 'Cache cleared successfully',
         });
     } catch (error) {
-        console.error('[API] Failed to clear cache:', error);
+        logger.error('Failed to clear cache', { error, service: 'API/Cache' });
         return NextResponse.json(
             { error: 'Failed to clear cache' },
             { status: 500 }

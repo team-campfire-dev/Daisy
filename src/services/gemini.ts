@@ -3,6 +3,7 @@ import { searchGooglePlaces, GooglePlace } from '@/lib/googlePlaces';
 import { getOrFetchWalkingRoute } from '@/services/routeService';
 
 import { findNearbyPlaces, upsertGooglePlace } from './placeService';
+import { logger } from '@/lib/logger';
 
 
 const apiKey = process.env.GEMINI_API_KEY || '';
@@ -86,12 +87,12 @@ export async function generateDateCourse(
   // Complex Planning -> Flash
   // Simple Chat -> Flash-Lite
   const modelName = isPlanningRequest ? 'gemini-2.5-flash' : 'gemini-2.5-flash-lite';
-  console.log(`[Gemini] Using model: ${modelName} (Intent: ${isPlanningRequest ? 'Planning' : 'Chat'})`);
+  logger.info(`Using model: ${modelName}`, { intent: isPlanningRequest ? 'Planning' : 'Chat', service: 'Gemini' });
 
   const model = genAI.getGenerativeModel({ model: modelName });
 
   if (systemContext) {
-    console.log("[Gemini] System Context:", systemContext);
+    logger.debug("System Context provided", { systemContext, service: 'Gemini' });
   }
 
   const historyText = history.map(msg => `${msg.role}: ${msg.content}`).join('\n');
@@ -103,7 +104,7 @@ export async function generateDateCourse(
 
 
   if (isPlanningRequest) {
-    console.log("Planning request detected. Generating Google Search queries...");
+    logger.info("Planning request detected. Generating Google Search queries...", { service: 'Gemini' });
 
     // Smart Query Generation
     const queryPrompt = `
@@ -134,7 +135,7 @@ export async function generateDateCourse(
       const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
       const queries = JSON.parse(text) as string[];
 
-      console.log("Search Queries:", queries);
+      logger.info("Search Queries Generated", { queries, service: 'Gemini' });
 
       // Execute Searches (Parallel)
       // Limit to 3 results per query to save tokens/latency
@@ -147,7 +148,7 @@ export async function generateDateCourse(
       flattened.forEach(item => uniqueMap.set(item.placeId, item));
 
       // [NEW] Persist all found Google Places to DB
-      console.log(`[Gemini] Persisting ${uniqueMap.size} Google Places to DB...`);
+      logger.info(`Persisting ${uniqueMap.size} Google Places to DB...`, { service: 'Gemini' });
       for (const place of uniqueMap.values()) {
         await upsertGooglePlace(place);
       }
@@ -159,7 +160,7 @@ export async function generateDateCourse(
         try {
           // Radius: 2km default
           const cached = await findNearbyPlaces(anchor.location.lat, anchor.location.lng, 2000, 50);
-          console.log(`[Gemini] Found ${cached.length} cached places nearby.`);
+          logger.info(`Found ${cached.length} cached places nearby.`, { service: 'Gemini' });
 
           cached.forEach((p: any) => {
             if (!uniqueMap.has(p.id)) {
@@ -180,7 +181,7 @@ export async function generateDateCourse(
             }
           });
         } catch (dbErr) {
-          console.error("[Gemini] DB Search Error:", dbErr);
+          logger.error("DB Search Error", { error: dbErr, service: 'Gemini' });
         }
       } else {
         // Fallback...
@@ -207,7 +208,7 @@ export async function generateDateCourse(
             `;
 
     } catch (e) {
-      console.error("Search Step Failed:", e);
+      logger.error("Search Step Failed", { error: e, service: 'Gemini' });
       // If search fails, we might fall back to general knowledge, but we prefer not to.
       searchContext = "Search failed. Try to recommend famous places if possible, but warn the user.";
     }
@@ -349,7 +350,7 @@ export async function generateDateCourse(
     return responseData;
 
   } catch (error) {
-    console.error('Gemini Error:', error);
+    logger.error('Gemini Error', { error, service: 'Gemini' });
     return {
       conversationResponse: "죄송합니다. 처리 중 오류가 발생했습니다.",
       plans: [],

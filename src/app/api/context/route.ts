@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { withSession } from '@/middleware/session';
 import { CacheService } from '@/services/cacheService';
+import { logger } from '@/lib/logger';
 
 const CONTEXT_CACHE_KEY = 'user_context';
 const CHAT_HISTORY_CACHE_KEY = 'chat_history';
@@ -28,7 +29,7 @@ export const GET = withSession(async (request, session) => {
         const cache = await CacheService.getCachedRoute(session.sessionId, CONTEXT_CACHE_KEY);
         return NextResponse.json({ context: cache });
     } catch (error) {
-        console.error('[API] Failed to get data:', error);
+        logger.error('Failed to get context data', { error, service: 'API/Context' });
         return NextResponse.json(
             { error: 'Failed to retrieve data' },
             { status: 500 }
@@ -63,7 +64,7 @@ export const POST = withSession(async (request, session) => {
 
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error('[API] Failed to save data:', error);
+        logger.error('Failed to save context data', { error, service: 'API/Context' });
         return NextResponse.json(
             { error: 'Failed to save data' },
             { status: 500 }

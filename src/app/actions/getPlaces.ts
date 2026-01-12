@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/db';
 import { Place } from '@prisma/client';
+import { logger } from '@/lib/logger';
 
 export interface GetPlacesParams {
     query?: string;
@@ -58,7 +59,7 @@ export async function getPlaces({
             total,
         };
     } catch (error) {
-        console.error('Error fetching places:', error);
+        logger.error('Error fetching places', { error, service: 'Action/getPlaces' });
         return { places: [], hasMore: false, total: 0 };
     }
 }
