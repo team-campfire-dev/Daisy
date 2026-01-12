@@ -71,7 +71,7 @@ jobs:
 
           # DB 스키마 동기화 (Prisma Push)
           echo "Syncing Database Schema..."
-          docker compose exec -T app npx prisma db push
+          docker compose exec -T app npx prisma@5.17.0 db push
           
           # 불필요한 이미지 정리
           docker image prune -f
